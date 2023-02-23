@@ -1,44 +1,61 @@
 <template>
-  <div class="home flex-grow-1 d-flex flex-column align-items-center justify-content-center">
-    <div class="home-card p-5 bg-white rounded elevation-3">
-      <img
-        src="https://bcw.blob.core.windows.net/public/img/8600856373152463"
-        alt="CodeWorks Logo"
-        class="rounded-circle"
-      >
-      <h1 class="my-5 bg-dark text-white p-3 rounded text-center">
-        Vue 3 Starter
-      </h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-12" v-for="b in blogs">
+        <div class="row">
+          <div class="col-9">
+            <div class="d-flex align-items-center">
+              <img :src="b.creator.picture" alt="" class="rounded-circle img-fluid profile-picture">
+              <h6>{{ b.creator.name}}</h6>
+            </div>
+            <h4>{{ b.title }}</h4>
+            <p class="text-limit">{{ b.body }}</p>
+            <small>{{ b.date }}</small>
+          </div>
+          <div class="col-3">
+            <img src="" alt="">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { onMounted, computed } from 'vue';
+import { AppState } from '../AppState';
+import { blogsService } from '../services/BlogsService'
+import Pop from '../utils/Pop';
+
 export default {
   setup() {
-    return {}
+    async function getBlogs() {
+      try {
+        await blogsService.getBlogs()
+      } catch (error) {
+        Pop.error(error, '[getting blogs]')
+      }
+    }
+    onMounted(() => {
+      getBlogs()
+    })
+    return {
+      blogs: computed(() => AppState.blogs)
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
-.home {
-  display: grid;
-  height: 80vh;
-  place-content: center;
-  text-align: center;
-  user-select: none;
+.profile-picture{
+  height: 5em;
+  width: 5em;
+}
 
-  .home-card {
-    width: 50vw;
-
-    >img {
-      height: 200px;
-      max-width: 200px;
-      width: 100%;
-      object-fit: contain;
-      object-position: center;
-    }
-  }
+.text-limit{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  max-height: 8vh;
 }
 </style>
